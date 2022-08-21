@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "management/api/v1/student")
+@RequestMapping(path = "/management/api/v1/student")
 public class StudentManagementController {
 
     private final StudentService studentService;
@@ -16,24 +17,39 @@ public class StudentManagementController {
         this.studentService = studentService;
     }
 
-
     @GetMapping
-    public List<Student> getStudents() {
+    public List<Student> getStudents(){
         return studentService.getStudents();
     }
 
-    @PostMapping
-    public void registerNewStudent(Student student){
-        System.out.println(student);
+    @GetMapping("/{id}")
+    public Optional<Student> getStudentById(@PathVariable Long id){
+        return studentService.getStudentById(id);
+    }
+
+    @PostMapping(path="/")
+    public @ResponseBody String addNewStudent (@RequestBody CreateStudentDTO dto){
+        Student s = new Student();
+        s.setName(dto.getName());
+        s.setEmail(dto.getEmail());
+        s.setDob(dto.getDob());
+        s.setAge(dto.getDob());
+        this.studentService.addNewstudent(s);
+        return "Saved";
     }
 
     @DeleteMapping(path = "{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Integer studentId){
-        System.out.println(studentId);
+    public void deleteStudent(@PathVariable("studentId") Long studentId){
+        studentService.deleteStudent(studentId);
     }
 
-    @PutMapping(path = "{studentId}")
-    public void updateStudent(@PathVariable("studentId") Integer studentId,@RequestBody Student student){
-        System.out.printf("%s %s%n", studentId, student);
+
+    //new(solution)
+    @PutMapping(path = "/{studentId}")
+    public void updateStudent(
+            @PathVariable("studentId") Long studentId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email){
+        studentService.updateStudent(studentId, name, email);
     }
 }

@@ -60,5 +60,7 @@ public class StudentService{
             }
             student.setEmail(email);
         }
+
+        studentRepository.save(student);
     }
 }
