@@ -29,31 +29,32 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login","index","/css/*","js/*")
                 .permitAll()
-                .antMatchers("/api/**").hasRole("ADMIN")
+                .antMatchers("/api/**").hasAnyRole(ApplicationUserRole.ADMIN.name(),ApplicationUserRole.STUDENT.name())
+                .antMatchers("/management/**").hasRole(ApplicationUserRole.ADMIN.name())
                 .anyRequest()
                 .authenticated()
                 .and()
-                .httpBasic();
+                .formLogin();
     }
     @Override
     @Bean
     protected UserDetailsService userDetailsService(){
        UserDetails stevenSmithUser = User.builder()
-                .username("Steven Smith")
+                .username("Steven")
                 .password(passwordEncoder.encode("password"))
-                .roles(ApplicationUserRole.Student.name()) // Role_Student
+                .roles(ApplicationUserRole.STUDENT.name()) // ROLE_STUDENT
                 .build();
 
         UserDetails tomUser = User.builder()
                 .username("Tom")
                 .password(passwordEncoder.encode("password123"))
-                .roles(ApplicationUserRole.ADMIN.name()) // Role_Admin
+                .roles(ApplicationUserRole.ADMIN.name()) // ROLE_ADMIN
                 .build();
 
         UserDetails thomasUser = User.builder()
                 .username("Thomas")
                 .password(passwordEncoder.encode("password123"))
-                .roles(ApplicationUserRole.AdminTrainee.name()) // Role_AdminTrainee
+                .roles(ApplicationUserRole.ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
                 .build();
 
         return new InMemoryUserDetailsManager(
